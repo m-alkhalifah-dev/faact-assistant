@@ -1,0 +1,21 @@
+{
+  "name": "faact-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "FAACT Academy AI assistant backend — grounded, refusal-first, provider-portable. PLACEHOLDER corpus; NOT for production until D-1/D-2 cleared.",
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "chat": "node --env-file-if-exists=.env src/cli.ts",
+    "ask": "node --env-file-if-exists=.env scripts/ask.ts",
+    "eval": "node --env-file-if-exists=.env eval/run-eval.ts",
+    "failover": "node scripts/failover-demo.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.8.2"
+  }
+}

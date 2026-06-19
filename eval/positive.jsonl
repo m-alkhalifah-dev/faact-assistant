@@ -1,0 +1,12 @@
+{"id":"pos-diplomas-ar","lang":"ar","type":"positive","q":"ما هي الدبلومات المتاحة في الأكاديمية؟","expect":["الأمن السيبراني","الذكاء الاصطناعي","الموارد البشرية"]}
+{"id":"pos-diplomas-en","lang":"en","type":"positive","q":"What diplomas does FAACT offer?","expect":["Cybersecurity","Artificial Intelligence","Human Resources"]}
+{"id":"pos-vision-ar","lang":"ar","type":"positive","q":"ما هي رؤية الأكاديمية؟","expect":["الرائدة","موثوقية"]}
+{"id":"pos-contact-en","lang":"en","type":"positive","q":"How can I contact FAACT Academy?","expect":["966","info@faact.sa"]}
+{"id":"pos-branches-ar","lang":"ar","type":"positive","q":"أين تقع فروع الأكاديمية؟","expect":["العارض","العقيق"]}
+{"id":"pos-hours-en","lang":"en","type":"positive","q":"What are your working hours?","expect":["Sunday","9:00"]}
+{"id":"pos-founder-ar","lang":"ar","type":"positive","q":"من هو مؤسس الأكاديمية؟","expect":["فهد","السلطان"]}
+{"id":"pos-cyber-careers-en","lang":"en","type":"positive","q":"What careers does the Cybersecurity diploma lead to?","expect":["Ethical Hacker","Security"]}
+{"id":"pos-ai-topics-ar","lang":"ar","type":"positive","q":"ماذا يغطي دبلوم الذكاء الاصطناعي؟","expect":["تعلم الآلة","التعلم العميق"]}
+{"id":"pos-accreditation-en","lang":"en","type":"positive","q":"Which bodies accredit FAACT?","expect":["TVTC"]}
+{"id":"pos-partners-ar","lang":"ar","type":"positive","q":"من هم شركاء التدريب لدى الأكاديمية؟","expect":["PMI","City & Guilds"]}
+{"id":"pos-hr-cover-en","lang":"en","type":"positive","q":"What does the Human Resources diploma cover?","expect":["recruitment","performance"]}

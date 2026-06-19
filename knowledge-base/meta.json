@@ -1,0 +1,20 @@
+{
+  "version": "0.1.0-placeholder",
+  "approved": false,
+  "approvedBy": null,
+  "approvedDate": null,
+  "status": "PLACEHOLDER — sample corpus for the demo only. NOT cleared by D-1 (AI may speak for FAACT) or D-2 (approved content). Do not deploy.",
+  "languages": ["ar", "en"],
+  "source": "Assembled from already-public, already-approved FAACT site content (diploma names, vision/mission, accreditors, partners, contact). Danger topics deliberately EXCLUDED.",
+  "fencedTopics": [
+    "prices",
+    "fees",
+    "cohort_dates",
+    "start_dates",
+    "seat_availability",
+    "discount_codes",
+    "pmi_atp_status",
+    "individual_certificate_issuing_bodies"
+  ],
+  "fenceRule": "Any question touching a fenced topic must be DEFERRED to a human (WhatsApp). The assistant never states or estimates these."
+}
