@@ -1,0 +1,39 @@
+# Keep-warm: pings the deployed /health every ~12 minutes so Render's free instance
+# doesn't fall asleep on idle and serve the first real visitor a 30–50s cold start.
+#
+# TRADEOFF / honesty note:
+#   • GitHub's cron is best-effort and often runs LATE (sometimes 10–20 min behind)
+#     under load, and scheduled workflows auto-DISABLE after 60 days of repo inactivity.
+#   • For a hard guarantee, prefer an external pinger (cron-job.org or UptimeRobot,
+#     both free, both more punctual). See MAINTENANCE-RUNBOOK-DRAFT.md §"Keep-warm".
+#   • This in-repo workflow is the zero-extra-service fallback.
+#
+# Setup: add a repo Actions VARIABLE named HEALTH_URL = https://<service>.onrender.com/health
+#        (Settings → Secrets and variables → Actions → Variables). No secret needed —
+#        /health exposes nothing sensitive.
+name: keep-warm
+on:
+  schedule:
+    - cron: "*/12 * * * *" # every 12 minutes (within the 10–14 min target)
+  workflow_dispatch: {} # allow manual "Run workflow" to test
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /health
+        run: |
+          URL="${{ vars.HEALTH_URL }}"
+          if [ -z "$URL" ]; then
+            echo "::error::Set the HEALTH_URL Actions variable to your Render /health URL."
+            exit 1
+          fi
+          echo "Pinging $URL"
+          code=$(curl -s -o /tmp/body -w "%{http_code}" --max-time 60 "$URL")
+          echo "HTTP $code"; cat /tmp/body; echo
+          # Cold-start can exceed a fast timeout; one retry covers the wake-up window.
+          if [ "$code" != "200" ]; then
+            echo "Retrying after cold-start wake..."; sleep 20
+            code=$(curl -s -o /tmp/body -w "%{http_code}" --max-time 60 "$URL")
+            echo "HTTP $code"; cat /tmp/body; echo
+          fi
+          test "$code" = "200"

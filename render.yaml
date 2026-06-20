@@ -1,0 +1,29 @@
+# Render Blueprint — deploys the faact-assistant backend as a free Web Service.
+# Reproducible-as-code: `render.yaml` defines everything EXCEPT the secret values,
+# which are entered once in the Render dashboard (sync:false below) and never live
+# in this repo. To deploy: New → Blueprint → connect this repo → Render reads this.
+services:
+  - type: web
+    name: faact-assistant
+    runtime: node
+    plan: free # $0; sleeps after ~15min idle — keep-warm pings /health (see .github/workflows)
+    region: frankfurt # closest free Render region to the Saudi audience
+    branch: master
+    buildCommand: npm install
+    startCommand: node src/server.ts
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "24" # native TS type-stripping is on by default in Node ≥ 23.6
+      - key: LLM_CHAIN
+        value: gemini,groq
+      - key: ALLOWED_ORIGINS
+        value: https://faact-academy.netlify.app,https://faact.sa,https://www.faact.sa
+      # ── Secrets: set these in the Render dashboard (Environment tab). ──────────
+      # sync:false means Render PROMPTS for the value and stores it encrypted in the
+      # service's secrets — it is NEVER written to this file or committed to git.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY # optional failover; leave blank until you have a Groq key
+        sync: false

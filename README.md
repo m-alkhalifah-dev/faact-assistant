@@ -8,8 +8,10 @@ skills prescribe.
 > ⚠️ **Status: PLACEHOLDER / DEMO.** The knowledge base is sample content (real
 > public facts only, danger topics fenced). It is **not** cleared by gate **D-1**
 > (Dr. Fahd approves an AI speaking for FAACT) or **D-2** (approved corpus).
-> **Do not deploy. Do not wire into the live site.** This repo is a runnable demo
-> to help secure those approvals.
+> **Not wired into the live site.** This repo is a runnable demo to help secure those
+> approvals. It MAY run as a standalone, always-on **demo backend** (its own URL,
+> CORS-locked, nothing on the site links to it) — but going live *on the site* still
+> waits on D-1/D-2 and the widget (a later session).
 
 This is the **backend, in its own repo** — the FAACT site never imports it. The site
 will only ever know a URL string (added in a later phase, behind an off-by-default flag).
@@ -66,9 +68,33 @@ src/
   prompt.ts       refusal-first grounded prompt builder
   chat.ts         answer() — the one entry point
   cli.ts          interactive REPL
+  server.ts       node:http front door — /health + /chat (zero deps, CORS + rate-limit)
 eval/             the release gate
 scripts/ask.ts    one-shot question
+render.yaml       Render Blueprint (deploy-as-code; secrets are dashboard-only)
+Dockerfile        portability — same container runs on any Docker host
 ```
+
+## Run it as a service (HTTP)
+```bash
+npm run serve        # local: loads .env, listens on :8787
+# GET  /health  → liveness + providerMode (no AI call) — used by keep-warm
+# POST /chat    → { "question": "...", "history": [...] } → grounded JSON
+curl -s localhost:8787/health
+curl -s -X POST localhost:8787/chat -H 'Content-Type: application/json' \
+  -H 'Origin: https://faact-academy.netlify.app' \
+  -d '{"question":"ما هي الدبلومات المتاحة؟"}'
+```
+- **CORS** is locked to `ALLOWED_ORIGINS` (the FAACT origins only); other origins get `403`.
+- **Rate limit** is per-IP, in-memory (`RATE_LIMIT_MAX`/min). HTTPS is terminated by the host.
+- Zero runtime dependencies — `node:http` only, so swapping hosts stays a config move.
+
+## Deploy (always-on, free) — Render
+Host: **Render free Web Service**, defined in `render.yaml`. Sleeps on idle (~15min) → a
+keep-warm pings `/health` (`.github/workflows/keep-warm.yml` or an external uptime monitor).
+**Full steps, secret location, and the asleep-vs-dead-key-vs-rate-limit triage live in
+`MAINTENANCE-RUNBOOK-DRAFT.md` (§2–§4).** The `GEMINI_API_KEY` is set in Render's secrets
+panel (`sync:false` in the blueprint) — **never in the repo.**
 
 ## Recommended go-live default (decided at launch — see audit/ai-assistant/DECISIONS.md)
 - **Demo now:** free Gemini Flash-Lite (or mock) — $0.

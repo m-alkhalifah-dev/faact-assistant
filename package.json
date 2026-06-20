@@ -5,9 +5,11 @@
   "type": "module",
   "description": "FAACT Academy AI assistant backend — grounded, refusal-first, provider-portable. PLACEHOLDER corpus; NOT for production until D-1/D-2 cleared.",
   "engines": {
-    "node": ">=22.9"
+    "node": ">=23.6"
   },
   "scripts": {
+    "start": "node src/server.ts",
+    "serve": "node --env-file-if-exists=.env src/server.ts",
     "chat": "node --env-file-if-exists=.env src/cli.ts",
     "ask": "node --env-file-if-exists=.env scripts/ask.ts",
     "eval": "node --env-file-if-exists=.env eval/run-eval.ts",
