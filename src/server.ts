@@ -3,6 +3,7 @@ import type { ChatMessage } from "./types.ts";
 import { answer } from "./chat.ts";
 import { getProviderChain, chainIsMock } from "./config.ts";
 import { loadKB } from "./kb.ts";
+import { isAllowedOrigin, PREVIEW_HOST_SUFFIX } from "./cors.ts";
 
 /**
  * The HTTP front door for the assistant — the ONLY new surface the deployed host
@@ -19,10 +20,11 @@ import { loadKB } from "./kb.ts";
 // ── Config (all env-driven, safe defaults) ───────────────────────────────────
 const PORT = Number(process.env.PORT) || 8787;
 
-// CORS allow-list: the FAACT origins only. Comma-separated, overridable per host.
+// CORS allow-list: the production origin (exact). Comma-separated, overridable
+// per host. Netlify deploy-preview / branch origins are matched separately by a
+// precise host-suffix rule in isAllowedOrigin (see ./cors.ts) — not enumerated here.
 const ALLOWED_ORIGINS = new Set(
-  (process.env.ALLOWED_ORIGINS ??
-    "https://faact-academy.netlify.app,https://faact.sa,https://www.faact.sa")
+  (process.env.ALLOWED_ORIGINS ?? "https://faact-academy.netlify.app")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean),
@@ -84,7 +86,7 @@ function clientIp(req: IncomingMessage): string {
 function applyCors(req: IncomingMessage, res: ServerResponse): "allowed" | "no-origin" | "forbidden" {
   const origin = req.headers.origin;
   if (!origin) return "no-origin";
-  if (!ALLOWED_ORIGINS.has(origin)) return "forbidden";
+  if (!isAllowedOrigin(origin, ALLOWED_ORIGINS)) return "forbidden";
   res.setHeader("Access-Control-Allow-Origin", origin);
   res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
@@ -235,6 +237,6 @@ const server = createServer((req, res) => {
 server.listen(PORT, () => {
   console.log(`[server] faact-assistant listening on :${PORT}`);
   console.log(`[server] provider mode: ${providerMode()}`);
-  console.log(`[server] allowed origins: ${[...ALLOWED_ORIGINS].join(", ")}`);
+  console.log(`[server] allowed origins: ${[...ALLOWED_ORIGINS].join(", ")} (+ *${PREVIEW_HOST_SUFFIX})`);
   console.log(`[server] rate limit: ${RATE_LIMIT_MAX} req / ${RATE_LIMIT_WINDOW_MS}ms per IP`);
 });

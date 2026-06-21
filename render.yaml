@@ -19,7 +19,7 @@ services:
       - key: LLM_CHAIN
         value: gemini,groq
       - key: ALLOWED_ORIGINS
-        value: https://faact-academy.netlify.app,https://faact.sa,https://www.faact.sa
+        value: https://faact-academy.netlify.app
       # ── Secrets: set these in the Render dashboard (Environment tab). ──────────
       # sync:false means Render PROMPTS for the value and stores it encrypted in the
       # service's secrets — it is NEVER written to this file or committed to git.
